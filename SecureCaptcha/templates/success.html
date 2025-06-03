@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Success - Secure App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        h1 {
+            color: #2e7d32;
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        
+        .section {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .section h2 {
+            color: #444;
+            font-size: 22px;
+            margin-top: 0;
+        }
+        
+        .info-box {
+            background-color: #f5f7fa;
+            border-left: 4px solid #4a90e2;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .info-content {
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .button-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .button:hover {
+            background-color: #3a80d2;
+        }
+        
+        .button-secondary {
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .button-secondary:hover {
+            background-color: #e5e5e5;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            margin: 0 10px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="success-icon">✓</div>
+            <h1>Login Successful!</h1>
+            <p class="subtitle">Welcome back, <strong>{{ username }}</strong>. Your login has been verified securely.</p>
+        </div>
+        
+        <div class="section">
+            <h2>Account Security Information</h2>
+            
+            <div class="info-box">
+                <div class="info-title">CAPTCHA Protection Status</div>
+                <div class="info-content">
+                    <div class="info-item">
+                        Your account is protected by our advanced CAPTCHA system that helps prevent automated attacks and unauthorized access attempts.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Protection Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ login_time }}</div>
+                    <div class="stat-label">Login Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">Active</div>
+                    <div class="stat-label">Security Status</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>How Our CAPTCHA System Protects You</h2>
+            
+            <div class="info-box">
+                <div class="info-item">
+                    <div class="info-title">Image-based Verification</div>
+                    <div class="info-content">
+                        Our CAPTCHA uses distorted characters that are easy for humans to read but difficult for bots to decipher automatically.
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-title">Database Integration</div>
+                    <div class="info-content">
+                        All CAPTCHA sessions are stored securely in our database, allowing for enhanced tracking and protection against replay attacks.
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-title">Attempt Limiting</div>
+                    <div class="info-content">
+                        The system monitors failed attempts and blocks suspicious activity after multiple failures, protecting your account from brute force attacks.
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-title">Session Management</div>
+                    <div class="info-content">
+                        Each CAPTCHA is tied to your specific session and expires after use or a set time period, preventing session hijacking.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <a href="/dashboard" class="button">Go to Dashboard</a>
+            <button id="logoutButton" class="button button-secondary">Logout</button>
+        </div>
+        
+        <div class="footer">
+            &copy; 2025 CAPTCHA Security System | Protected by Advanced Database-Integrated CAPTCHA Technology
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('logoutButton').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                alert('Failed to logout. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

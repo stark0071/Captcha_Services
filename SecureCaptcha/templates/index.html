@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login with CAPTCHA</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #444;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-container {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        
+        .captcha-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .captcha-image {
+            height: 70px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .captcha-image img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+        
+        .captcha-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ddd;
+        }
+        
+        .captcha-text {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .refresh-button {
+            background: none;
+            border: none;
+            color: #4a90e2;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .refresh-button:hover {
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: #3a80d2;
+        }
+        
+        .btn:disabled {
+            background-color: #bbb;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s infinite linear;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #666;
+            background-color: #f8f9fa;
+        }
+        
+        .footer a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(74, 144, 226, 0.2);
+            border-radius: 50%;
+            border-top-color: #4a90e2;
+            animation: spin 1s infinite linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Account Login</h1>
+            <p>Enter your credentials below</p>
+        </div>
+        
+        <div class="form-container">
+            <div id="alertContainer"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>CAPTCHA Verification</label>
+                    <div class="captcha-container">
+                        <div class="captcha-image" id="captchaContainer">
+                            <div>Loading CAPTCHA...</div>
+                        </div>
+                        <div class="captcha-controls">
+                            <span class="captcha-text">Enter the characters you see above</span>
+                            <button type="button" id="refreshCaptcha" class="refresh-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                </svg>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="captchaInput">CAPTCHA Code</label>
+                    <input type="text" id="captchaInput" name="captchaInput" placeholder="Enter the characters shown above" required maxlength="6">
+                </div>
+                
+                <button type="submit" id="submitButton" class="btn">Sign In</button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            Protected by CAPTCHA Technology | <a href="#">Need Help?</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const alertContainer = document.getElementById('alertContainer');
+            const refreshButton = document.getElementById('refreshCaptcha');
+            const captchaContainer = document.getElementById('captchaContainer');
+            const submitButton = document.getElementById('submitButton');
+            
+            // Function to show alerts
+            function showAlert(message, type) {
+                alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            }
+            
+            // Function to clear alerts
+            function clearAlert() {
+                alertContainer.innerHTML = '';
+            }
+            
+            // Function to load a new CAPTCHA
+            async function loadCaptcha() {
+                // Show loading in captcha container
+                captchaContainer.innerHTML = `
+                    <div class="loader-overlay">
+                        <div class="spinner"></div>
+                    </div>
+                `;
+                
+                try {
+                    const response = await fetch('/api/captcha');
+                    const data = await response.json();
+                    
+                    // Update captcha image
+                    captchaContainer.innerHTML = `
+                        <img src="${data.image}" alt="CAPTCHA verification" aria-label="CAPTCHA image containing characters to verify you are human">
+                    `;
+                    
+                    // Clear captcha input
+                    document.getElementById('captchaInput').value = '';
+                } catch (error) {
+                    console.error('Error loading CAPTCHA:', error);
+                    captchaContainer.innerHTML = 'Failed to load CAPTCHA';
+                }
+            }
+            
+            // Load initial CAPTCHA
+            loadCaptcha();
+            
+            // Event listener for refreshing CAPTCHA
+            refreshButton.addEventListener('click', function() {
+                loadCaptcha();
+            });
+            
+            // Form submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                clearAlert();
+                
+                // Set button to loading state
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="loading"></span> Signing In...';
+                
+                // Get form data
+                const formData = {
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value,
+                    captchaInput: document.getElementById('captchaInput').value
+                };
+                
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Success
+                        showAlert('Login successful! Redirecting...', 'success');
+                        
+                        // Force redirect to success page
+                        setTimeout(function() {
+                            window.location.href = '/success';
+                        }, 1500);
+                    } else {
+                        // Error
+                        showAlert(data.message || 'Login failed. Please try again.', 'error');
+                        
+                        // Refresh CAPTCHA if there was an error
+                        loadCaptcha();
+                    }
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    showAlert('An error occurred. Please try again.', 'error');
+                    loadCaptcha();
+                } finally {
+                    // Reset button state
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
